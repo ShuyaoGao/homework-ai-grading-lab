@@ -1,0 +1,800 @@
+<title>作业智评</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;900&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 版式概念：作文稿纸。浅灰绿“纸面”+ 方格线母题，墨绿是品牌墨水，朱红只用于“老师批注”式的圈画与强调。
+   单栏阅读宽度 + 截图画廊；手机截图装进手机外框，桌面截图装进浏览器外框。 */
+:root {
+  --paper: #f3f6f2;
+  --sheet: #fbfcfa;
+  --ink: #16221c;
+  --ink-2: #4b5a52;
+  --ink-3: #74837b;
+  --grid: #d6e1da;
+  --rule: #c9d6cd;
+  --brand: #2f6f5e;
+  --brand-soft: #dcebe4;
+  --redpen: #c23b2c;
+  --redpen-soft: #f6dfda;
+  --demo: #6b4fa0;
+  --demo-soft: #ece6f7;
+  --s1: #2a78d6;  /* 图表系列 1：人工评分 */
+  --s2: #eb6834;  /* 图表系列 2：规则基线 */
+  --shadow: 0 1px 2px rgba(22,34,28,.06), 0 8px 24px rgba(22,34,28,.07);
+  --display: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --measure: 66ch;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111815; --sheet: #18201c; --ink: #e3ece6; --ink-2: #a9b8af; --ink-3: #82938a;
+    --grid: #233029; --rule: #2d3b33; --brand: #6cc0a3; --brand-soft: #1f3a30;
+    --redpen: #ef7d6c; --redpen-soft: #3c231f; --demo: #b9a2e6; --demo-soft: #2c2540;
+    --s1: #3987e5; --s2: #d95926; --shadow: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111815; --sheet: #18201c; --ink: #e3ece6; --ink-2: #a9b8af; --ink-3: #82938a;
+  --grid: #233029; --rule: #2d3b33; --brand: #6cc0a3; --brand-soft: #1f3a30;
+  --redpen: #ef7d6c; --redpen-soft: #3c231f; --demo: #b9a2e6; --demo-soft: #2c2540;
+  --s1: #3987e5; --s2: #d95926; --shadow: none; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.7; }
+.wrap { max-width: 1140px; margin: 0 auto; padding-inline: 20px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.25; margin: 0; }
+h2 { font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem); font-weight: 900; }
+h3 { font-size: 1.12rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--brand); }
+img { max-width: 100%; display: block; }
+.eyebrow { font-family: var(--mono); font-size: .76rem; letter-spacing: .12em; text-transform: uppercase; color: var(--brand); }
+.lede { color: var(--ink-2); max-width: var(--measure); font-size: 1.04rem; }
+.muted { color: var(--ink-3); }
+.small { font-size: .88rem; }
+.mono { font-family: var(--mono); }
+section { padding-block: 64px; border-top: 1px solid var(--rule); }
+section > .wrap > header { display: grid; gap: 10px; margin-bottom: 28px; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 4px; }
+
+/* 顶部 */
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); }
+.topbar .wrap { display: flex; align-items: center; gap: 18px; min-height: 52px; }
+.brandmark { display: flex; align-items: center; gap: 8px; font-family: var(--display); font-weight: 900; font-size: 1.05rem; color: var(--ink); text-decoration: none; }
+.brandmark i { width: 26px; height: 26px; border-radius: 7px; background: var(--brand); color: var(--sheet); display: grid; place-items: center; font-style: normal; font-size: .9rem; }
+.topnav { display: flex; gap: 14px; overflow-x: auto; font-size: .9rem; scrollbar-width: none; }
+.topnav a { color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+.topnav a:hover { color: var(--brand); }
+.demo-pill { margin-left: auto; white-space: nowrap; font-size: .78rem; padding: 2px 10px; border-radius: 99px; background: var(--demo-soft); color: var(--demo); border: 1px dashed var(--demo); }
+
+/* 首屏：作文稿纸母题 */
+.hero { padding-block: 56px 40px; border-top: 0;
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 34px 34px; background-position: -1px -1px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 40px; align-items: center; }
+.hero-copy { background: var(--paper); padding: 24px 0; display: grid; gap: 18px; }
+.hero h1 { font-size: clamp(2.3rem, 1.4rem + 3.6vw, 4rem); font-weight: 900; letter-spacing: .02em; }
+.hero h1 .mark { position: relative; white-space: nowrap; }
+.hero h1 .mark svg { position: absolute; left: -6%; top: -18%; width: 112%; height: 136%; pointer-events: none; overflow: visible; }
+.hero h1 .mark path { fill: none; stroke: var(--redpen); stroke-width: 2.4; stroke-linecap: round; }
+.hero .lede { font-size: 1.12rem; }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); text-decoration: none; font-size: .95rem; }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: var(--sheet); font-weight: 600; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .86rem; color: var(--ink-2); }
+.facts b { font-family: var(--mono); color: var(--ink); font-weight: 600; }
+
+/* 设备外框 */
+.phone { width: min(300px, 78vw); margin: 0 auto; border-radius: 34px; padding: 10px; background: #0f1512; box-shadow: var(--shadow), 0 0 0 1px var(--rule); position: relative; }
+.phone img { border-radius: 26px; width: 100%; height: auto; aspect-ratio: 390 / 844; object-fit: cover; object-position: top; background: var(--sheet); }
+.phone::before { content: ""; position: absolute; top: 18px; left: 50%; width: 70px; height: 18px; margin-left: -35px; background: #0f1512; border-radius: 10px; z-index: 1; }
+.browser { border-radius: 12px; overflow: hidden; background: var(--sheet); box-shadow: var(--shadow), 0 0 0 1px var(--rule); }
+.browser .bar { display: flex; gap: 6px; align-items: center; padding: 8px 12px; background: var(--brand-soft); font-family: var(--mono); font-size: .72rem; color: var(--ink-2); }
+.browser .bar span { width: 9px; height: 9px; border-radius: 50%; background: var(--rule); }
+.browser .bar em { font-style: normal; margin-left: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.browser img { width: 100%; height: auto; aspect-ratio: 1440 / 900; object-fit: cover; object-position: top; }
+.hero-phone { position: relative; }
+.hero-note { position: absolute; right: -6px; top: 34%; max-width: 150px; font-family: var(--display); font-size: .92rem; color: var(--redpen);
+  transform: rotate(-4deg); background: var(--paper); padding: 4px 8px; border: 1.5px solid var(--redpen); border-radius: 6px; }
+
+/* 痛点 */
+.pain { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; background: var(--sheet); }
+.pain > div { padding: 22px; display: grid; gap: 8px; align-content: start; }
+.pain > div + div { border-left: 1px solid var(--rule); }
+.pain .who { font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; color: var(--ink-3); }
+.pain p { color: var(--ink-2); font-size: .95rem; }
+
+/* 流程轮播 */
+.flow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: center; }
+.steps { display: grid; gap: 8px; counter-reset: s; }
+.step { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; text-align: left; padding: 14px; border-radius: 12px; border: 1px solid transparent;
+  background: none; color: inherit; font: inherit; cursor: pointer; }
+.step:hover { background: var(--sheet); }
+.step[aria-selected="true"] { background: var(--sheet); border-color: var(--rule); box-shadow: var(--shadow); }
+.step .n { width: 40px; height: 40px; border: 1.5px solid var(--grid); display: grid; place-items: center; font-family: var(--display); font-weight: 900; color: var(--ink-3); background: var(--sheet); }
+.step[aria-selected="true"] .n { border-color: var(--redpen); color: var(--redpen); border-radius: 50%; }
+.step h3 { font-size: 1.04rem; }
+.step p { color: var(--ink-2); font-size: .92rem; }
+.step .who { font-size: .76rem; color: var(--ink-3); font-family: var(--mono); }
+.flow-stage { display: grid; justify-items: center; gap: 12px; }
+.flow-stage figcaption { font-size: .86rem; color: var(--ink-3); text-align: center; max-width: 320px; }
+.progress { width: 120px; height: 3px; background: var(--rule); border-radius: 3px; overflow: hidden; }
+.progress i { display: block; height: 100%; width: 0; background: var(--redpen); }
+.progress.run i { animation: fill 5.5s linear forwards; }
+@keyframes fill { to { width: 100%; } }
+
+/* 架构图 */
+.diagram { overflow-x: auto; background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 16px; }
+.diagram svg { min-width: 760px; width: 100%; height: auto; display: block; }
+.d-box { fill: var(--sheet); stroke: var(--rule); stroke-width: 1.4; }
+.d-zone { fill: var(--paper); stroke: var(--grid); stroke-width: 1; stroke-dasharray: 4 4; }
+.d-key { fill: var(--brand-soft); stroke: var(--brand); stroke-width: 1.4; }
+.d-red { fill: var(--redpen-soft); stroke: var(--redpen); stroke-width: 1.4; }
+.d-t { fill: var(--ink); font-family: var(--body); font-size: 13px; }
+.d-tb { fill: var(--ink); font-family: var(--body); font-size: 14px; font-weight: 700; }
+.d-ts { fill: var(--ink-3); font-family: var(--body); font-size: 11.5px; }
+.d-tz { fill: var(--ink-3); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; }
+.d-line { stroke: var(--ink-3); stroke-width: 1.4; fill: none; }
+.d-line.red { stroke: var(--redpen); stroke-dasharray: 5 4; }
+.d-arrow { fill: var(--ink-3); }
+.legend-row { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 12px; font-size: .85rem; color: var(--ink-2); }
+.legend-row span { display: inline-flex; align-items: center; gap: 6px; }
+.legend-row i { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
+
+/* 流水线 */
+.pipe { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.pipe article { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.pipe .k { font-family: var(--mono); font-size: .74rem; color: var(--brand); letter-spacing: .06em; }
+.pipe p { font-size: .9rem; color: var(--ink-2); }
+.beforeafter { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 22px; }
+.beforeafter figure { margin: 0; display: grid; gap: 8px; }
+.beforeafter img { border-radius: 10px; border: 1px solid var(--rule); width: 100%; height: 420px; object-fit: cover; object-position: top; background: var(--sheet); }
+.beforeafter figcaption { font-size: .86rem; color: var(--ink-2); }
+.ba-switch { display: inline-flex; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; margin-top: 18px; }
+.ba-switch button { border: 0; background: var(--sheet); color: var(--ink-2); padding: 6px 14px; font: inherit; font-size: .88rem; cursor: pointer; }
+.ba-switch button[aria-pressed="true"] { background: var(--brand); color: var(--sheet); }
+
+/* 截图画廊 */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.tabs button { border: 1px solid var(--rule); background: var(--sheet); color: var(--ink-2); padding: 7px 14px; border-radius: 99px; font: inherit; font-size: .9rem; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.shots { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.phones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.phones .phone { width: 100%; padding: 7px; border-radius: 26px; }
+.phones .phone img { border-radius: 20px; }
+.phones .phone::before { top: 12px; width: 50px; height: 12px; margin-left: -25px; }
+figure.shot { margin: 0; display: grid; gap: 8px; }
+figure.shot figcaption { font-size: .86rem; color: var(--ink-2); }
+figure.shot figcaption b { color: var(--ink); }
+.desks { display: grid; gap: 22px; }
+
+/* 量规 */
+.rubric { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.tablebox { overflow-x: auto; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 600; color: var(--ink-3); font-size: .8rem; letter-spacing: .04em; background: var(--paper); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+pre.code { margin: 0; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; font-family: var(--mono); font-size: .8rem; line-height: 1.6;
+  overflow-x: auto; color: var(--ink-2); max-height: 440px; }
+pre.code .k { color: var(--brand); } pre.code .s { color: var(--ink); } pre.code .c { color: var(--ink-3); }
+.note { font-size: .86rem; color: var(--ink-2); border-left: 3px solid var(--redpen); padding: 4px 0 4px 12px; max-width: var(--measure); }
+
+/* 一致性图 */
+.eval { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 32px; align-items: start; }
+.method { display: grid; gap: 14px; }
+.method dl { margin: 0; display: grid; gap: 12px; }
+.method dt { font-weight: 700; }
+.method dd { margin: 2px 0 0; color: var(--ink-2); font-size: .93rem; }
+.chart { background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 18px; position: relative; }
+.chart h3 { font-size: 1rem; }
+.chart .sub { font-size: .84rem; color: var(--ink-3); margin-top: 2px; }
+.chart svg { width: 100%; height: auto; display: block; margin-top: 10px; overflow: visible; }
+.chart .axis { fill: var(--ink-3); font-family: var(--mono); font-size: 11px; }
+.chart .lbl { fill: var(--ink); font-family: var(--body); font-size: 12.5px; }
+.chart .lbl2 { fill: var(--ink-3); font-family: var(--body); font-size: 11px; }
+.chart .val { fill: var(--ink); font-family: var(--mono); font-size: 12px; font-weight: 600; }
+.chart .gridl { stroke: var(--rule); stroke-width: 1; }
+.chart .ref { stroke: var(--ink-3); stroke-width: 1.2; stroke-dasharray: 3 3; }
+.chart .pending { fill: none; stroke: var(--ink-3); stroke-width: 1.2; stroke-dasharray: 4 3; }
+.chart .hit { fill: transparent; cursor: default; }
+.chart .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .84rem; color: var(--ink-2); margin-top: 8px; }
+.chart .legend span { display: inline-flex; align-items: center; gap: 6px; }
+.chart .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--paper); font-size: .8rem; padding: 6px 9px; border-radius: 6px; max-width: 240px; line-height: 1.45; }
+.linkbtn { background: none; border: 0; color: var(--brand); font: inherit; font-size: .85rem; cursor: pointer; padding: 0; text-decoration: underline; }
+
+/* 隐私 */
+.privacy { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.gate { display: grid; gap: 10px; }
+.gate .lvl { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 14px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; }
+.gate .lvl b { font-family: var(--display); }
+.gate .lvl p { color: var(--ink-2); font-size: .92rem; }
+.gate .lvl .tag { font-family: var(--mono); font-size: .74rem; color: var(--ink-3); }
+.gate .arrow { text-align: center; color: var(--ink-3); font-size: .85rem; }
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.checklist li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: .93rem; color: var(--ink-2); }
+.checklist li::before { content: "✓"; color: var(--brand); font-weight: 700; }
+.checklist li.todo::before { content: "○"; color: var(--redpen); }
+
+/* 状态 */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; background: var(--sheet); }
+.stats > div { padding: 18px; display: grid; gap: 4px; }
+.stats > div + div { border-left: 1px solid var(--rule); }
+.stats .v { font-family: var(--mono); font-size: 1.9rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stats .k { font-size: .86rem; color: var(--ink-2); }
+.stats .v.red { color: var(--redpen); font-family: var(--display); font-size: 1.5rem; }
+.honest { margin-top: 18px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.honest > div { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px; }
+.honest h3 { margin-bottom: 8px; }
+.honest ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: .92rem; display: grid; gap: 4px; }
+
+/* 路线图 */
+.road { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-left: 2px solid var(--rule); }
+.road li { position: relative; padding: 0 0 22px 24px; display: grid; gap: 4px; max-width: 760px; }
+.road li::before { content: ""; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2px solid var(--rule); }
+.road li.now::before { background: var(--brand); border-color: var(--brand); }
+.road .when { font-family: var(--mono); font-size: .76rem; color: var(--ink-3); }
+.road p { color: var(--ink-2); font-size: .93rem; }
+.decide { margin-top: 28px; background: var(--redpen-soft); border-radius: 12px; padding: 18px 20px; display: grid; gap: 8px; }
+.decide ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+footer { padding-block: 36px 56px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: .86rem; }
+footer .wrap { display: grid; gap: 6px; }
+
+@media (max-width: 900px) {
+  .hero .wrap, .flow, .shots, .rubric, .eval, .privacy, .honest { grid-template-columns: minmax(0, 1fr); }
+  .pipe { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats > div:nth-child(3) { border-left: 0; }
+  .stats > div:nth-child(n+3) { border-top: 1px solid var(--rule); }
+  .hero-note { right: 0; }
+}
+@media (max-width: 620px) {
+  .wrap { padding-inline: 16px; }
+  section { padding-block: 44px; }
+  .pain { grid-template-columns: minmax(0, 1fr); }
+  .pain > div + div { border-left: 0; border-top: 1px solid var(--rule); }
+  .pipe { grid-template-columns: minmax(0, 1fr); }
+  .beforeafter img { height: 300px; }
+  .gate .lvl { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .hero-note { display: none; }
+  .topnav { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .progress.run i { animation: none; width: 100%; } }
+</style>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="brandmark" href="#top"><i aria-hidden="true">评</i>作业智评</a>
+    <nav class="topnav" aria-label="页内导航">
+      <a href="#flow">流程</a><a href="#arch">架构</a><a href="#pipeline">流水线</a><a href="#screens">界面</a>
+      <a href="#rubric">量规</a><a href="#eval">一致性</a><a href="#privacy">隐私</a><a href="#status">现状</a><a href="#roadmap">路线图</a>
+    </nav>
+    <span class="demo-pill" title="页面中所有截图与数字均来自演示数据或离线规则基线">演示版 · 未接入真实大模型</span>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="eyebrow">教育评价 AI 系统 · v0.1 演示版</span>
+      <h1>拍一张作业，<span class="mark">先批一遍<svg viewBox="0 0 120 60" preserveAspectRatio="none" aria-hidden="true"><path d="M8 34 C 4 12, 60 2, 104 12 C 124 18, 118 46, 70 52 C 30 56, 6 46, 12 26"/></svg></span></h1>
+      <p class="lede">家长或老师用手机拍下作文、数学作业，系统自动矫正图片、识别手写，按量规给出分项分、错误批注和评语。老师复核定分，学生画像随之更新。AI 只做初评，分数以老师复核为准。</p>
+      <div class="cta">
+        <a class="btn primary" href="#flow">看完整流程</a>
+        <a class="btn" href="#status">现在做到哪一步</a>
+      </div>
+      <div class="facts"><span><b>4</b> 种角色</span><span><b>5</b> 套内置量规</span><span><b>41</b> 个 API</span><span><b>78</b> 项自动测试</span><span>手机与桌面同一套前端</span></div>
+    </div>
+    <div class="hero-phone">
+      <div class="phone"><img src="assets/m_result.jpg" alt="手机上的批改结果页：总分、档次、评语和“演示数据”标注" width="390" height="844"></div>
+      <p class="hero-note">演示数据也会在页面上标明</p>
+    </div>
+  </div>
+</header>
+
+<section id="why">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">为谁解决什么</span>
+      <h2>批改是老师最耗时的重复劳动</h2>
+      <p class="lede">一篇 800 字作文细批要几分钟，一个班就是一两个小时。家长想知道孩子哪里弱，往往只能看到一个分数。</p>
+    </header>
+    <div class="pain">
+      <div><span class="who">老师</span><h3>先看 AI 初评，再改分</h3><p>系统先按量规打出分项分、圈出错别字和语法错误、写好评语草稿。老师只需要核对和修改，每次修改都会留下记录。</p></div>
+      <div><span class="who">家长</span><h3>手机拍照就能交</h3><p>调用手机相机，拍完可以直接裁剪、旋转；网络不好时自动重试。看得到老师复核后的分数、批注和孩子的学习画像。</p></div>
+      <div><span class="who">学校</span><h3>学情数据能沉淀下来</h3><p>班级看板汇总分数分布和共性错误，还会持续比较 AI 初评与老师复核的一致性，用数据决定 AI 能放手到什么程度。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="flow">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">核心流程</span>
+      <h2>家长拍照 → AI 初评 → 老师复核 → 画像更新</h2>
+      <p class="lede">下面的画面都截自真实运行的系统（手机尺寸）。数据是程序合成的演示作业，评分来自离线规则模拟。</p>
+    </header>
+    <div class="flow">
+      <div class="steps" role="tablist" aria-label="流程步骤">
+        <button class="step" role="tab" id="st-0" aria-selected="true" aria-controls="flow-stage" data-i="0"><span class="n">1</span><span><span class="who">家长 · 手机</span><h3>拍照上传，现场裁剪</h3><p>选孩子和作业，调用后置相机拍照。拍完自动弹出裁剪框，拖四个角去掉桌面；多页作业可以排序。</p></span></button>
+        <button class="step" role="tab" id="st-1" aria-selected="false" aria-controls="flow-stage" data-i="1"><span class="n">2</span><span><span class="who">系统 · 后台</span><h3>识别 + 按量规初评</h3><p>矫正和增强图片，识别手写，按量规打出分项分和档次，在原文里标出错误。拿不准的地方会提示“建议人工复核”。</p></span></button>
+        <button class="step" role="tab" id="st-2" aria-selected="false" aria-controls="flow-stage" data-i="2"><span class="n">3</span><span><span class="who">老师 · 手机或电脑</span><h3>复核：改分、批注、评语</h3><p>在待复核队列里逐份确认。可以修改每个分项分和扣分，增删批注，改评语，并写下改分理由。</p></span></button>
+        <button class="step" role="tab" id="st-3" aria-selected="false" aria-controls="flow-stage" data-i="3"><span class="n">4</span><span><span class="who">家长 / 学生</span><h3>看到复核结果和画像</h3><p>家长看到“教师已复核”的分数。画像里的成绩趋势、写作能力雷达、知识点掌握度随之更新。</p></span></button>
+      </div>
+      <figure class="flow-stage" id="flow-stage" role="tabpanel" aria-live="polite">
+        <div class="phone"><img id="flow-img" src="assets/m_editor.jpg" alt="上传时的裁剪与旋转界面" width="390" height="844"></div>
+        <figcaption id="flow-cap">拍照后自动打开调整界面。旋转和裁剪在服务器的原图上执行，不损失清晰度。</figcaption>
+        <div class="progress" id="flow-progress" aria-hidden="true"><i></i></div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="arch">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">系统架构</span>
+      <h2>一个服务托管前后端，每一步模型都能替换</h2>
+      <p class="lede">FastAPI 同时提供 API 和静态前端，一条命令就能启动。识别和评分都抽象成 provider：离线规则、云端大模型、服务器上的本地模型，切换时只改配置。</p>
+    </header>
+    <div class="diagram" role="img" aria-label="系统架构图：浏览器/手机经 HTTPS 调用 FastAPI，经鉴权与合规闸门进入处理流水线（预处理、识别、评分、后处理），模型 provider 包括 mock、Claude、通义、vLLM 本地与 PaddleOCR，数据存 SQLite 与本地文件，分析模块生成画像和看板。">
+      <svg viewBox="0 0 960 470" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-arrow" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+        <!-- 客户端 -->
+        <rect class="d-zone" x="10" y="20" width="200" height="430" rx="12"/>
+        <text class="d-tz" x="26" y="44">客户端</text>
+        <rect class="d-box" x="26" y="60" width="168" height="82" rx="10"/>
+        <text class="d-tb" x="40" y="86">手机浏览器 / PWA</text>
+        <text class="d-ts" x="40" y="106">相机拍照 · 裁剪旋转</text>
+        <text class="d-ts" x="40" y="124">弱网重试 · 压缩</text>
+        <rect class="d-box" x="26" y="158" width="168" height="66" rx="10"/>
+        <text class="d-tb" x="40" y="184">桌面浏览器</text>
+        <text class="d-ts" x="40" y="204">复核 · 看板 · 量规</text>
+        <rect class="d-box" x="26" y="240" width="168" height="66" rx="10"/>
+        <text class="d-tb" x="40" y="266">原生 JS 单页应用</text>
+        <text class="d-ts" x="40" y="286">无构建 · Chart.js 本地</text>
+        <text class="d-ts" x="26" y="342">教师 · 家长 · 学生 · 管理员</text>
+        <text class="d-ts" x="26" y="362">同一套界面，按角色裁剪</text>
+        <!-- 服务端 -->
+        <rect class="d-zone" x="250" y="20" width="460" height="430" rx="12"/>
+        <text class="d-tz" x="266" y="44">FASTAPI 服务（单进程）</text>
+        <rect class="d-box" x="266" y="60" width="200" height="56" rx="10"/>
+        <text class="d-tb" x="280" y="84">鉴权与权限</text>
+        <text class="d-ts" x="280" y="102">JWT · 四种角色 · 按学生授权</text>
+        <rect class="d-red" x="490" y="60" width="204" height="56" rx="10"/>
+        <text class="d-tb" x="504" y="84">合规闸门</text>
+        <text class="d-ts" x="504" y="102">监护人同意 · 云端自动降级</text>
+        <rect class="d-key" x="266" y="136" width="428" height="150" rx="12"/>
+        <text class="d-tz" x="282" y="158">处理流水线</text>
+        <rect class="d-box" x="282" y="170" width="92" height="96" rx="8"/>
+        <text class="d-t" x="292" y="196">① 预处理</text>
+        <text class="d-ts" x="292" y="216">纸张矫正</text><text class="d-ts" x="292" y="232">纠偏增强</text><text class="d-ts" x="292" y="248">多页拼接</text>
+        <rect class="d-box" x="386" y="170" width="92" height="96" rx="8"/>
+        <text class="d-t" x="396" y="196">② 手写识别</text>
+        <text class="d-ts" x="396" y="216">OCR provider</text><text class="d-ts" x="396" y="232">逐字转写</text><text class="d-ts" x="396" y="248">不纠错</text>
+        <rect class="d-box" x="490" y="170" width="92" height="96" rx="8"/>
+        <text class="d-t" x="500" y="196">③ 量规评分</text>
+        <text class="d-ts" x="500" y="216">评分 provider</text><text class="d-ts" x="500" y="232">JSON Schema</text><text class="d-ts" x="500" y="248">YAML 量规</text>
+        <rect class="d-box" x="594" y="170" width="88" height="96" rx="8"/>
+        <text class="d-t" x="604" y="196">④ 校验</text>
+        <text class="d-ts" x="604" y="216">截断重算</text><text class="d-ts" x="604" y="232">引文定位</text><text class="d-ts" x="604" y="248">复核判断</text>
+        <path class="d-line" d="M374 218 H384" marker-end="url(#ar)"/><path class="d-line" d="M478 218 H488" marker-end="url(#ar)"/><path class="d-line" d="M582 218 H592" marker-end="url(#ar)"/>
+        <rect class="d-box" x="266" y="306" width="200" height="62" rx="10"/>
+        <text class="d-tb" x="280" y="330">教师复核</text>
+        <text class="d-ts" x="280" y="350">逐项改分 · 只追加的修改记录</text>
+        <rect class="d-box" x="490" y="306" width="204" height="62" rx="10"/>
+        <text class="d-tb" x="504" y="330">分析</text>
+        <text class="d-ts" x="504" y="350">画像 · 看板 · QWK 一致性</text>
+        <rect class="d-box" x="266" y="384" width="428" height="50" rx="10"/>
+        <text class="d-tb" x="280" y="414">SQLite + 本地文件</text>
+        <text class="d-ts" x="420" y="414">作业图片去 EXIF · 审计日志 · 保留期清理</text>
+        <!-- provider -->
+        <rect class="d-zone" x="750" y="20" width="200" height="430" rx="12"/>
+        <text class="d-tz" x="766" y="44">模型 PROVIDER</text>
+        <rect class="d-key" x="766" y="60" width="168" height="54" rx="10"/>
+        <text class="d-tb" x="780" y="84">mock（当前）</text>
+        <text class="d-ts" x="780" y="102">离线规则 · 不联网</text>
+        <rect class="d-box" x="766" y="126" width="168" height="54" rx="10"/>
+        <text class="d-tb" x="780" y="150">本地 vLLM</text>
+        <text class="d-ts" x="780" y="168">GPU 服务器 · Qwen-VL</text>
+        <rect class="d-box" x="766" y="192" width="168" height="54" rx="10"/>
+        <text class="d-tb" x="780" y="216">通义 DashScope</text>
+        <text class="d-ts" x="780" y="234">境内云 · 需单独同意</text>
+        <rect class="d-box" x="766" y="258" width="168" height="54" rx="10"/>
+        <text class="d-tb" x="780" y="282">Claude</text>
+        <text class="d-ts" x="780" y="300">境外云 · 需单独同意</text>
+        <rect class="d-box" x="766" y="324" width="168" height="54" rx="10"/>
+        <text class="d-tb" x="780" y="348">PaddleOCR</text>
+        <text class="d-ts" x="780" y="366">本地 OCR · 可选</text>
+        <text class="d-ts" x="766" y="404">OpenAI 兼容接口统一接入</text>
+        <text class="d-ts" x="766" y="422">vLLM / 通义 / 其他</text>
+        <!-- 连线 -->
+        <path class="d-line" d="M194 100 C 228 100, 232 88, 264 88" marker-end="url(#ar)"/>
+        <path class="d-line" d="M194 190 C 230 190, 232 98, 264 96" marker-end="url(#ar)"/>
+        <path class="d-line" d="M466 88 H488" marker-end="url(#ar)"/>
+        <path class="d-line" d="M592 116 V134" marker-end="url(#ar)"/>
+        <path class="d-line" d="M480 286 V304" marker-end="url(#ar)"/>
+        <path class="d-line" d="M694 210 C 724 210, 730 150, 764 150" marker-end="url(#ar)"/>
+        <path class="d-line" d="M694 226 C 724 226, 730 87, 764 87" marker-end="url(#ar)"/>
+        <path class="d-line red" d="M694 234 C 730 234, 728 270, 764 280" marker-end="url(#ar)"/>
+        <path class="d-line red" d="M694 230 C 730 230, 730 214, 764 214" marker-end="url(#ar)"/>
+        <path class="d-line" d="M366 368 V382" marker-end="url(#ar)"/>
+        <path class="d-line" d="M592 368 V382" marker-end="url(#ar)"/>
+      </svg>
+    </div>
+    <div class="legend-row">
+      <span><i style="background:var(--brand-soft);outline:1.4px solid var(--brand)"></i>处理核心 / 当前启用</span>
+      <span><i style="background:var(--redpen-soft);outline:1.4px solid var(--redpen)"></i>合规闸门；红色虚线 = 只在监护人单独同意“云端 AI”后才会走的路径</span>
+    </div>
+  </div>
+</section>
+
+<section id="pipeline">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">处理流水线</span>
+      <h2>从一张斜拍的照片，到按原文位置标出的批注</h2>
+    </header>
+    <div class="pipe">
+      <article><span class="k">01 预处理</span><h3>OpenCV 矫正</h3><p>按 EXIF 转正并删除 GPS 等元数据。检测纸张四边形做透视矫正，用投影法纠偏，去阴影增强，裁边，多页拼接成长图。</p></article>
+      <article><span class="k">02 手写识别</span><h3>逐字转写，不纠错</h3><p>提示词要求模型保留学生原有的错别字和语法错误，看不清的字记为 [?]。这些都要留给评分，不能在识别阶段被“改正”。</p></article>
+      <article><span class="k">03 量规评分</span><h3>结构化 JSON</h3><p>输出总分、分项分、扣分、错误（类型 + 原文引文）、评语和置信度。量规用 YAML 写，档次、维度、扣分规则都写在里面。</p></article>
+      <article><span class="k">04 校验</span><h3>不信任模型给的数字</h3><p>越界的分数截断，总分由服务端重新计算，按引文在原文中定位错误，自动定档。低置信、贴近档次边界、低分的作业标记为建议复核。</p></article>
+    </div>
+    <div class="ba-switch" role="group" aria-label="示例">
+      <button id="ba-zh" aria-pressed="true">中文作文 · 作文格</button><button id="ba-en" aria-pressed="false">英语作文 · 横线本</button>
+    </div>
+    <div class="beforeafter">
+      <figure><img id="ba-before" src="assets/pp_zh_before.jpg" alt="预处理前：桌面上斜拍的作业照片"><figcaption><b>处理前</b>：桌面上斜拍，有透视变形、光照不均和阴影。</figcaption></figure>
+      <figure><img id="ba-after" src="assets/pp_zh_after.jpg" alt="预处理后：矫正、裁边并增强的作业图"><figcaption><b>处理后</b>：自动检测纸张并透视矫正，纸面占比约 0.72；去阴影后的灰度图送去识别。</figcaption></figure>
+    </div>
+    <p class="note" style="margin-top:16px">样张由程序合成：10 种手写字体的笔迹，中文用作文格稿纸，偶尔有涂改，再模拟手机斜拍。合成样张比真实学生字迹好认，识别准确率要用真实作业来测，见“现状”一节。</p>
+  </div>
+</section>
+
+<section id="screens">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">界面</span>
+      <h2>同一套前端，手机和电脑都能用</h2>
+      <p class="lede">移动端优先的响应式设计，按角色显示不同的导航和权限。所有截图均由无头 Edge 自动截取，数据为演示数据。</p>
+    </header>
+    <div class="tabs" role="tablist" aria-label="角色">
+      <button role="tab" aria-selected="true" data-role="parent">家长</button>
+      <button role="tab" aria-selected="false" data-role="teacher">教师</button>
+      <button role="tab" aria-selected="false" data-role="student">学生</button>
+      <button role="tab" aria-selected="false" data-role="admin">管理员 / 后端</button>
+    </div>
+    <div id="shots" class="shots"></div>
+  </div>
+</section>
+
+<section id="rubric">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">评分量规</span>
+      <h2>量规写成 YAML，老师可以复制后修改</h2>
+      <p class="lede">内置 5 套：中考英语书面表达（20 分五档）、高考英语应用文（15 分五档）、高考作文（基础等级 40 + 发展等级 20）、简答/数学（逐题给分）、小论文（100 分）。各维度满分之和必须等于总分，否则校验不通过。</p>
+    </header>
+    <div class="rubric">
+      <div class="tablebox">
+        <table>
+          <caption class="small muted" style="text-align:left;padding:10px 12px">高考作文量规（chinese_essay_gaokao）· 分项与四等</caption>
+          <thead><tr><th>维度</th><th class="num">满分</th><th>一等</th><th>二等</th><th>三等</th><th>四等</th></tr></thead>
+          <tbody>
+            <tr><td><b>基础等级·内容</b><br><span class="small muted">切合题意、中心突出、内容充实</span></td><td class="num">20</td><td class="num">20–16</td><td class="num">15–11</td><td class="num">10–6</td><td class="num">5–0</td></tr>
+            <tr><td><b>基础等级·表达</b><br><span class="small muted">符合文体、结构严谨、语言流畅</span></td><td class="num">20</td><td class="num">20–16</td><td class="num">15–11</td><td class="num">10–6</td><td class="num">5–0</td></tr>
+            <tr><td><b>发展等级</b><br><span class="small muted">深刻、丰富、有文采、有创新</span></td><td class="num">20</td><td class="num">20–16</td><td class="num">15–11</td><td class="num">10–6</td><td class="num">5–0</td></tr>
+          </tbody>
+        </table>
+        <table>
+          <thead><tr><th>扣分项</th><th>规则</th><th class="num">上限</th></tr></thead>
+          <tbody>
+            <tr><td>错别字</td><td>每 1 个扣 1 分，重复的不计</td><td class="num">5</td></tr>
+            <tr><td>缺标题</td><td>扣 2 分</td><td class="num">2</td></tr>
+            <tr><td>字数不足</td><td>每少 50 字扣 1 分</td><td class="num">10</td></tr>
+            <tr><td>标点错误</td><td>错误多的酌情扣分</td><td class="num">2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:grid;gap:12px">
+<pre class="code" aria-label="评分结果 JSON 示例"><span class="c">// 模型只输出它要判断的内容；位置和总分由服务端计算</span>
+{
+  <span class="k">"total_score"</span>: <span class="s">41</span>, <span class="k">"max_score"</span>: <span class="s">60</span>, <span class="k">"band"</span>: <span class="s">"二等"</span>,
+  <span class="k">"criteria"</span>: [
+    {<span class="k">"id"</span>: <span class="s">"content"</span>, <span class="k">"score"</span>: <span class="s">19</span>, <span class="k">"level"</span>: <span class="s">"一等"</span>},
+    {<span class="k">"id"</span>: <span class="s">"expression"</span>, <span class="k">"score"</span>: <span class="s">12.5</span>},
+    {<span class="k">"id"</span>: <span class="s">"development"</span>, <span class="k">"score"</span>: <span class="s">11.5</span>}],
+  <span class="k">"deductions"</span>: [{<span class="k">"id"</span>: <span class="s">"length"</span>, <span class="k">"points"</span>: <span class="s">2</span>}],
+  <span class="k">"errors"</span>: [{<span class="k">"type"</span>: <span class="s">"typo"</span>, <span class="k">"quote"</span>: <span class="s">"在接再厉"</span>,
+     <span class="k">"start"</span>: <span class="s">212</span>, <span class="k">"end"</span>: <span class="s">216</span>, <span class="k">"suggestion"</span>: <span class="s">"再接再厉"</span>}],
+  <span class="k">"confidence"</span>: <span class="s">0.5</span>, <span class="k">"needs_review"</span>: <span class="s">true</span>,
+  <span class="k">"review_reasons"</span>: [<span class="s">"模型置信度较低（0.50）"</span>]
+}</pre>
+        <p class="note">“档次”按分项等级比例折算，便于看板统计，可以自定义。内置量规参照公开的评分原则整理，不是官方原文，请学科老师按本地细则审定。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="eval">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">一致性评估</span>
+      <h2>AI 能放手到什么程度，用数据说话</h2>
+      <p class="lede">每次老师复核都会和 AI 初评配对记录，系统持续计算一致性。离线时，也可以在公开的人工评分数据集上评估任意模型。</p>
+    </header>
+    <div class="eval">
+      <div class="method">
+        <dl>
+          <div><dt>QWK（二次加权 Kappa）</dt><dd>作文评分领域的标准指标，差得越远罚得越重。1 表示完全一致，0 相当于随机打分。通常把 ≥ 0.7 视为一致性较好。</dd></div>
+          <div><dt>±1 档一致率</dt><dd>AI 和老师所定档次相差不超过一档的比例。老师判断 AI 能否当初评用，最直观的就是这个数。</dd></div>
+          <div><dt>人和人之间作为上限</dt><dd>两位专家评分员之间本身也不完全一致。CFMS-34 中文作文集里，两位专家之间的 QWK 是 0.569。AI 达到这个水平，就和再找一位人类评分员差不多。</dd></div>
+          <div><dt>防止报出“好看”的假数字</dt><dd>线性映射和留出校准两种口径同时报告。模型给所有作文同一个分时，QWK 不报 0，而是直接拦截并说明原因。</dd></div>
+        </dl>
+      </div>
+      <figure class="chart" id="qwk-chart" style="margin:0">
+        <h3>与人工评分的一致性（QWK）</h3>
+        <p class="sub">公开数据集，2026-10-07 实测。目前只有离线规则基线，真实大模型待接入。</p>
+        <div class="legend" aria-hidden="true"><span><i style="background:var(--s1)"></i>人类评分员之间</span><span><i style="background:var(--s2)"></i>离线规则基线（mock）</span><span><i style="border:1.2px dashed var(--ink-3)"></i>真实大模型（待测）</span></div>
+        <svg id="qwk-svg" viewBox="0 0 560 300" role="img" aria-labelledby="qwk-desc"><desc id="qwk-desc">横向条形图：CFMS-34 人类评分员之间 QWK 0.569；规则基线 CFMS-34 0.271，ELLIPSE 校准后 0.218，ELLIPSE 线性映射 0.052；真实大模型待测。</desc></svg>
+        <div class="tip" id="qwk-tip" hidden></div>
+        <button class="linkbtn" id="qwk-toggle" aria-expanded="false" aria-controls="qwk-table">以表格查看</button>
+        <div class="tablebox" id="qwk-table" hidden style="margin-top:10px">
+          <table><thead><tr><th>对比</th><th>数据集</th><th class="num">n</th><th class="num">QWK</th><th class="num">Pearson</th></tr></thead>
+          <tbody>
+            <tr><td>两位专家评分员之间</td><td>CFMS-34 train（中文，0–5）</td><td class="num">751</td><td class="num">0.569</td><td class="num">0.577</td></tr>
+            <tr><td>规则基线，线性映射</td><td>CFMS-34 train</td><td class="num">751</td><td class="num">0.271</td><td class="num">0.277</td></tr>
+            <tr><td>规则基线，留出校准</td><td>ELLIPSE（英语学习者，1–5）</td><td class="num">2,738</td><td class="num">0.218</td><td class="num">0.322</td></tr>
+            <tr><td>规则基线，线性映射</td><td>ELLIPSE</td><td class="num">3,911</td><td class="num">0.052</td><td class="num">0.284</td></tr>
+          </tbody></table>
+        </div>
+      </figure>
+    </div>
+    <div style="margin-top:28px;display:grid;gap:12px">
+      <h3>首轮真实评估：一条命令，先估算费用</h3>
+      <p class="lede small">脚本同时测识别准确率（CER）和评分一致性（QWK）：20 张识别样本，加两个数据集各 100 篇作文。付费接口必须加 <span class="mono">--yes</span> 才会执行。</p>
+      <div class="tablebox">
+        <table>
+          <thead><tr><th>路线</th><th>识别 / 评分模型</th><th class="num">估算费用</th><th>价格依据</th></tr></thead>
+          <tbody>
+            <tr><td>服务器本地 vLLM</td><td>Qwen2.5-VL-7B / Qwen2.5-7B 等</td><td class="num">0 元 API 费用</td><td class="small">只有电费，粗估约 0.4 元/小时</td></tr>
+            <tr><td>通义 DashScope</td><td>qwen-vl-max / qwen-plus</td><td class="num">约 2.6 元</td><td class="small"><b>待核实</b>：官方模型页未列价格，暂用二手资料</td></tr>
+            <tr><td>Claude Sonnet 5.5</td><td>claude-sonnet-5-5</td><td class="num">约 6.5 美元（3.9–10.4）</td><td class="small">官方定价页，2026-10-08 核实：$2 / $10 每百万 token</td></tr>
+            <tr><td>Claude Opus 5.5</td><td>claude-opus-5-5</td><td class="num">约 13 美元</td><td class="small">同上：$4 / $20 每百万 token</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">隐私与合规</span>
+      <h2>不满 14 周岁的数据，按敏感个人信息处理</h2>
+      <p class="lede">按《个人信息保护法》，不满 14 周岁未成年人的个人信息属于敏感个人信息，处理前须取得监护人同意。数据默认留在校内，发给云端模型需要监护人另外同意。</p>
+    </header>
+    <div class="privacy">
+      <div class="gate">
+        <div class="lvl"><span><b>基本同意</b><br><span class="tag">scope = basic</span></span><p>监护人在“授权隐私”页面阅读说明并勾选后，才能上传作业。没有勾选时，老师和家长上传都会被拒绝。</p></div>
+        <div class="arrow">↓ 另外勾选（可不选）</div>
+        <div class="lvl" style="border-color:var(--redpen)"><span><b>云端 AI 单独同意</b><br><span class="tag">scope = cloud_ai</span></span><p>只有勾选了这一项，作业才可能发给通义或 Claude 处理（后者涉及数据出境）。没有勾选时，系统自动降级为本地模型或离线规则，并在结果页写明原因。</p></div>
+        <div class="arrow">↓ 默认路径</div>
+        <div class="lvl" style="border-color:var(--brand)"><span><b>本地模型兜底</b><br><span class="tag">vLLM · 校内服务器</span></span><p>默认推荐把 Qwen-VL 部署在实验室 GPU 服务器上，数据不出校，也不需要云端同意。管理员可以一键关闭所有云端模型。</p></div>
+      </div>
+      <div>
+        <ul class="checklist">
+          <li>发给模型的内容不含系统里的姓名、学号和班级</li>
+          <li>上传时重新编码图片，删除 EXIF（含 GPS 定位）</li>
+          <li>作业图片必须鉴权才能读取；Service Worker 不缓存接口数据和图片</li>
+          <li>按学生授权：老师只能看自己的班，家长只能看自己的孩子</li>
+          <li>同意和复核记录只追加不删除，撤回同意也留下记录</li>
+          <li>审计日志记录登录、查看画像、复核、导出、删除</li>
+          <li>家长可以导出孩子的全部数据、删除作业；图片默认保留 365 天</li>
+          <li>每个页面都提示“AI 评分仅供参考，以教师复核结果为准”</li>
+          <li class="todo">上线前须补做：HTTPS、静态加密、个人信息保护影响评估、年度合规审计</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="status">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">现在做到哪一步</span>
+      <h2>全流程已经跑通，真实大模型还没有接入</h2>
+    </header>
+    <div class="stats">
+      <div><span class="v">78</span><span class="k">项自动测试全部通过（鉴权、上传、流水线、schema、画像、评估）</span></div>
+      <div><span class="v">20/20</span><span class="k">项端到端检查通过（真实启动服务：上传 → 识别 → 评分 → 复核 → 画像）</span></div>
+      <div><span class="v">0</span><span class="k">个 JS 错误（4 个角色 × 2 种尺寸，共 38 次页面访问，外加一条浏览器全流程）</span></div>
+      <div><span class="v red">未验证</span><span class="k">真实手写识别准确率、大模型评分一致性（缺 key，GPU 服务器暂时不可达）</span></div>
+    </div>
+    <div class="honest">
+      <div><h3>已经可以演示</h3><ul>
+        <li>4 种角色的完整界面：手机拍照、裁剪旋转、弱网重试、结果页错误高亮、复核改分、画像、看板</li>
+        <li>OpenCV 预处理在合成照片上稳定检测纸张；纠偏误差 &lt; 1.5°</li>
+        <li>监护人同意闸门、云端降级、审计、导出、删除</li>
+        <li>评估工具在两个公开数据集上跑通，并给出规则基线</li>
+      </ul></div>
+      <div><h3>还不能下结论</h3><ul>
+        <li>页面上的分数来自离线规则（mock），不是 AI 模型的输出，界面上都有标注</li>
+        <li>演示作业是程序合成的仿手写图，“教师复核”也是模拟的</li>
+        <li>规则基线在中文数据上还不如只看篇幅；只有接入大模型才有实际评分价值</li>
+        <li>没有在真机上测过相机拍照；PWA 安装需要 HTTPS</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">路线图</span>
+      <h2>先拿到真实数字，再进课堂</h2>
+    </header>
+    <ol class="road">
+      <li class="now"><span class="when">现在 · v0.1 演示版</span><h3>离线跑通全流程</h3><p>mock provider，演示数据，自动化测试与浏览器测试覆盖。</p></li>
+      <li><span class="when">下一步 · GPU 服务器恢复后</span><h3>部署本地模型，跑首轮评估</h3><p>在服务器上用 vLLM 部署 Qwen2.5-VL 和一个 7B 以上的文本模型，一条命令得到 CER 和 QWK。</p></li>
+      <li><span class="when">同步 · 需要学校配合</span><h3>收集 20–50 份真实手写作业</h3><p>取得监护人同意并遮挡姓名，人工逐字转写，测真实识别准确率。这是目前最大的不确定点。</p></li>
+      <li><span class="when">试点 · 4 周</span><h3>一个班试用</h3><p>统计老师改分率、AI 与老师的一致性、每份作业节省的时间，再决定哪些题型可以只抽查。</p></li>
+      <li><span class="when">上线前</span><h3>补齐安全与合规</h3><p>HTTPS、数据加密、个人信息保护影响评估、修改默认账号，并请学科老师审定量规。</p></li>
+    </ol>
+    <div class="decide">
+      <h3>需要拍板的事</h3>
+      <ol>
+        <li>模型路线：服务器本地 vLLM（推荐，数据不出校）、通义（境内云），还是 Claude（境外；Anthropic 官方不在中国大陆提供服务）。</li>
+        <li>是否花一笔 API 费用先跑一轮真实评估：通义约 3 元（待核实），Claude Sonnet 5.5 约 6.5 美元。</li>
+        <li>家长能否在老师复核前看到 AI 初评分（目前默认可以，并标注“AI 初评”）。</li>
+        <li>中考英语量规的分值和档次按哪个地区的标准来定。</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>作业智评 · homework-ai-grading-lab · 2026-10 · 本页所有截图与数字均来自演示数据或公开数据集上的离线规则基线。</span>
+    <span>现场演示脚本见 showcase/DEMO.md；首轮真实评估见 scripts/first_real_eval.md；隐私说明见 docs/PRIVACY.md。</span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- 流程轮播 ---------- */
+  const FLOW = [
+    ["assets/m_editor.jpg", "上传时的裁剪与旋转界面", "拍照后自动打开调整界面。旋转和裁剪在服务器的原图上执行，不损失清晰度。"],
+    ["assets/m_result.jpg", "AI 初评结果页", "几秒后出现初评：总分、档次、评语，以及“建议人工复核”的原因。演示数据有醒目标注。"],
+    ["assets/m_review_form.jpg", "教师复核表单", "老师逐项改分，写改分理由。AI 原分保留，用于计算一致性。"],
+    ["assets/m_profile_after.jpg", "学生画像", "复核后，画像中的趋势、雷达图和知识点掌握度随之更新。"],
+  ];
+  let cur = 0, timer = null, userTook = false;
+  const img = $("#flow-img"), cap = $("#flow-cap"), prog = $("#flow-progress");
+  FLOW.forEach(([src]) => { const i = new Image(); i.src = src; });
+  function show(i) {
+    cur = i;
+    $$(".step").forEach((b, k) => b.setAttribute("aria-selected", String(k === i)));
+    img.src = FLOW[i][0]; img.alt = FLOW[i][1]; cap.textContent = FLOW[i][2];
+    prog.classList.remove("run"); void prog.offsetWidth;
+    if (!userTook && !reduce) prog.classList.add("run");
+  }
+  function auto() { if (userTook || reduce) return; clearTimeout(timer); timer = setTimeout(() => { show((cur + 1) % FLOW.length); auto(); }, 5500); }
+  $$(".step").forEach(b => b.addEventListener("click", () => { userTook = true; clearTimeout(timer); show(+b.dataset.i); }));
+  $(".steps").addEventListener("keydown", e => {
+    if (!["ArrowDown", "ArrowUp", "ArrowRight", "ArrowLeft"].includes(e.key)) return;
+    e.preventDefault(); userTook = true; clearTimeout(timer);
+    const n = (cur + (e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : FLOW.length - 1)) % FLOW.length;
+    show(n); $("#st-" + n).focus();
+  });
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { show(cur); auto(); } else clearTimeout(timer); }), { threshold: .4 }).observe($("#flow"));
+  }
+
+  /* ---------- 预处理前后 ---------- */
+  const ba = k => {
+    $("#ba-before").src = `assets/pp_${k}_before.jpg`; $("#ba-after").src = `assets/pp_${k}_after.jpg`;
+    $("#ba-zh").setAttribute("aria-pressed", String(k === "zh")); $("#ba-en").setAttribute("aria-pressed", String(k === "en"));
+  };
+  $("#ba-zh").onclick = () => ba("zh"); $("#ba-en").onclick = () => ba("en");
+
+  /* ---------- 截图画廊 ---------- */
+  const SHOTS = {
+    parent: {
+      phones: [["m_parent_home", "家长首页", "孩子的同意状态、最近作业，一键拍照上传"], ["m_upload", "拍照上传", "后置相机或相册；多页排序；✎ 裁剪旋转"],
+               ["m_result_text", "识别文字与错误高亮", "点击高亮可以看批注说明"], ["m_privacy", "授权与隐私", "基本同意和云端 AI 单独同意，可以随时撤回"]],
+      desks: [["d_en_highlight", "/#/submission", "桌面上的结果页：原图和识别文字左右对照，错误在原文中高亮"]],
+    },
+    teacher: {
+      phones: [["m_teacher_home", "教师首页", "待复核数量、班级与授权状态"], ["m_queue", "待复核队列", "AI 建议重点复核的会标红"],
+               ["m_review_form", "手机上复核", "逐项改分，写改分理由"], ["m_reviewed", "复核完成", "状态变为“教师已复核”"]],
+      desks: [["d_review", "/#/submission · 复核", "复核表单、修正识别文字、重新识别评分、复核记录"],
+              ["d_classboard", "/#/class · 班级看板", "单次作业分数分布、各维度平均得分率、档次分布"],
+              ["d_classboard_issues", "/#/class · 共性问题", "共性错误类型、多人重复出现的错误、需要关注的学生"]],
+    },
+    student: {
+      phones: [["m_student_home", "学生首页即画像", "只看得到自己的数据"], ["m_profile_charts", "写作能力雷达", "按量规维度统计，可切换学科"],
+               ["m_result_errors", "批注列表", "错误类型、原文引文和修改建议"], ["m_parent_sees_review", "复核后的结果", "分数以老师复核为准"]],
+      desks: [["d_profile", "/#/student · 学习画像", "成绩趋势、写作能力雷达、知识点掌握度、高频错误"],
+              ["d_math_result", "/#/submission · 数学", "逐题给分：计算错误、步骤缺失、单位错误分别标注"]],
+    },
+    admin: {
+      phones: [["m_login", "登录", "演示账号一键登录"]],
+      desks: [["d_admin", "/#/ · 管理员", "模型 provider 状态（只显示 key 是否存在）、账号、数据保留清理、审计日志"],
+              ["d_api_docs", "/api/docs · OpenAPI", "41 个接口的交互式文档，后端可以单独对接其他前端"],
+              ["d_rubric", "/#/rubrics · 量规", "查看 YAML 和发给模型的量规文本，复制为自定义量规并校验"],
+              ["d_assign", "/#/assignments · 布置作业", "选量规，填题目和参考答案（按量规类型自动给出模板）"]],
+    },
+  };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  function role(r) {
+    $$(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.role === r)));
+    const s = SHOTS[r];
+    $("#shots").innerHTML = `
+      <div class="desks">${s.desks.map(([f, url, c]) => `<figure class="shot"><div class="browser"><div class="bar"><span></span><span></span><span></span><em>127.0.0.1:8000${esc(url)}</em></div>
+        <img src="assets/${f}.jpg" alt="${esc(c)}" loading="lazy" width="1440" height="900"></div><figcaption>${esc(c)}</figcaption></figure>`).join("")}</div>
+      <div class="phones">${s.phones.map(([f, t, c]) => `<figure class="shot"><div class="phone"><img src="assets/${f}.jpg" alt="${esc(t)}" loading="lazy" width="390" height="844"></div>
+        <figcaption><b>${esc(t)}</b>　${esc(c)}</figcaption></figure>`).join("")}</div>`;
+  }
+  $$(".tabs button").forEach(b => b.addEventListener("click", () => role(b.dataset.role)));
+  role("parent");
+
+  /* ---------- QWK 条形图 ---------- */
+  const DATA = [
+    { label: "两位专家评分员之间", ds: "CFMS-34 · 中文小学作文", v: 0.569, s: "s1", note: "n=751，评分员 0–5 分" },
+    { label: "规则基线 · 线性映射", ds: "CFMS-34 · 中文小学作文", v: 0.271, s: "s2", note: "n=751" },
+    { label: "规则基线 · 留出校准", ds: "ELLIPSE · 英语学习者作文", v: 0.218, s: "s2", note: "n=2,738（30% 拟合，70% 评估）" },
+    { label: "规则基线 · 线性映射", ds: "ELLIPSE · 英语学习者作文", v: 0.052, s: "s2", note: "n=3,911" },
+    { label: "真实大模型", ds: "Claude / 通义 / 本地 vLLM", v: null, s: null, note: "待接入后用同一命令评估" },
+  ];
+  const svg = $("#qwk-svg"), tip = $("#qwk-tip");
+  const NS = "http://www.w3.org/2000/svg";
+  const W = 560, L = 178, R = 44, top = 18, row = 52, bh = 18;
+  const x = v => L + v * (W - L - R);
+  const el = (n, a, t) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (t != null) e.textContent = t; svg.appendChild(e); return e; };
+  const H = top + DATA.length * row + 26;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  [0, .2, .4, .6, .8, 1].forEach(t => { el("line", { x1: x(t), x2: x(t), y1: top - 6, y2: H - 22, class: "gridl" }); el("text", { x: x(t), y: H - 6, class: "axis", "text-anchor": "middle" }, t.toFixed(1)); });
+  el("line", { x1: x(.7), x2: x(.7), y1: top - 10, y2: H - 22, class: "ref" });
+  el("text", { x: x(.7) + 4, y: top - 2, class: "lbl2" }, "0.7 一致性较好");
+  DATA.forEach((d, i) => {
+    const y = top + i * row + 10;
+    el("text", { x: 0, y: y + 7, class: "lbl" }, d.label);
+    el("text", { x: 0, y: y + 24, class: "lbl2" }, d.ds);
+    if (d.v == null) {
+      el("rect", { x: x(0), y: y - 2, width: x(1) - x(0), height: bh, rx: 4, class: "pending" });
+      el("text", { x: (x(0) + x(1)) / 2, y: y + 11, class: "lbl2", "text-anchor": "middle" }, "待测");
+    } else {
+      const w = Math.max(2, x(d.v) - x(0));
+      // 数据端 4px 圆角、基线端方角
+      el("path", { d: `M${x(0)} ${y - 2} H${x(0) + w - 4} Q${x(0) + w} ${y - 2} ${x(0) + w} ${y + 2} V${y + bh - 6} Q${x(0) + w} ${y + bh - 2} ${x(0) + w - 4} ${y + bh - 2} H${x(0)} Z`, fill: `var(--${d.s})` });
+      el("text", { x: x(0) + w + 6, y: y + 11, class: "val" }, d.v.toFixed(3));
+    }
+    const hit = el("rect", { x: 0, y: y - 12, width: W, height: row - 4, class: "hit", tabindex: 0, "aria-label": `${d.label}，${d.ds}，QWK ${d.v ?? "待测"}` });
+    const showTip = ev => {
+      tip.hidden = false;
+      tip.innerHTML = `<b>${esc(d.label)}</b><br>${esc(d.ds)}<br>QWK ${d.v == null ? "待测" : d.v.toFixed(3)} · ${esc(d.note)}`;
+      const box = svg.getBoundingClientRect(), host = $("#qwk-chart").getBoundingClientRect();
+      const px = ev && ev.clientX ? ev.clientX - host.left + 12 : box.left - host.left + 40;
+      const py = (box.top - host.top) + (y + 26) * box.height / H;
+      tip.style.left = Math.min(px, host.width - 250) + "px"; tip.style.top = py + "px";
+    };
+    hit.addEventListener("mousemove", showTip); hit.addEventListener("focus", () => showTip());
+    hit.addEventListener("mouseleave", () => (tip.hidden = true)); hit.addEventListener("blur", () => (tip.hidden = true));
+  });
+  $("#qwk-toggle").onclick = () => { const t = $("#qwk-table"); t.hidden = !t.hidden; $("#qwk-toggle").setAttribute("aria-expanded", String(!t.hidden)); $("#qwk-toggle").textContent = t.hidden ? "以表格查看" : "收起表格"; };
+})();
+</script>

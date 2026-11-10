@@ -1,0 +1,51 @@
+key: paper_essay
+name: 小论文/研究性学习报告（结构·论证·引用规范，满分100分）
+subject: paper
+kind: paper
+version: "2026.1"
+max_score: 100
+source: 参照中学研究性学习与本科课程论文常见评价要素整理，可按课程要求修改权重。
+description: >
+  评价学生能否围绕一个明确的问题，按学术写作的基本结构组织材料、给出有依据的论证，并规范地引用文献。
+scoring_method: >
+  按五个维度分别打分。引用规范以“文中引用与文末参考文献一一对应、格式统一（如 GB/T 7714 或 APA）”为核心；
+  不能核实的引用（无作者/年份/出处）应标注 citation 错误并提示人工核查是否存在。
+bands:
+  - {name: 优秀, min: 85, max: 100, descriptor: 问题明确，结构完整，论证严密，引用规范，有独立见解。}
+  - {name: 良好, min: 75, max: 84, descriptor: 结构完整，论证较充分，引用基本规范。}
+  - {name: 中等, min: 60, max: 74, descriptor: 结构基本完整，论证有缺口或证据不足，引用有若干不规范。}
+  - {name: 待提高, min: 0, max: 59, descriptor: 结构残缺或以罗列材料代替论证，引用缺失或混乱。}
+criteria:
+  - id: structure
+    name: 结构完整
+    max: 20
+    dimension: organization
+    descriptor: 题目、摘要（如要求）、引言/问题提出、方法或材料、分析论证、结论、参考文献齐全，层次清楚。
+  - id: argument
+    name: 论证质量
+    max: 35
+    dimension: development
+    descriptor: 论点清晰；论据（数据、事实、文献）充分且与论点相关；推理严密，能回应反例或局限。
+    knowledge_point: 论证推理
+  - id: citation
+    name: 引用规范
+    max: 20
+    dimension: conventions
+    descriptor: 文中引用标注完整（编号或作者-年份），与参考文献列表一一对应，格式统一，不出现无出处的引语和数据。
+    knowledge_point: 引用规范
+  - id: language
+    name: 语言表达
+    max: 15
+    dimension: language
+    descriptor: 学术语体，表述准确简洁，无明显语病和错别字。
+  - id: originality
+    name: 创新与反思
+    max: 10
+    dimension: content
+    descriptor: 选题或视角有新意，有自己的分析和反思，而非简单摘抄。
+review_policy:
+  confidence_below: 0.7
+  near_band_boundary: 1.0
+  low_score_ratio: 0.5
+heuristic:
+  min_chars: 1200

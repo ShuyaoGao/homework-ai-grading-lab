@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software or its teaching materials, please cite it as below."
+title: "作业智评 / Homework AI Grading Lab: a teaching demo of photo-based homework assessment with OCR, rubric-based LLM grading and teacher review"
+abstract: "A teaching demo of an education-assessment pipeline: a guardian photographs homework on a phone, the server corrects the image (OpenCV), recognises the handwriting, grades it against a YAML rubric with structured output, a teacher reviews and adjusts the scores (append-only audit trail), and student profiles and a class dashboard are updated. FastAPI + SQLite backend, vanilla-JS front end. All demo data are synthetic and grading in the demo is an offline rule-based mock, not a real model. Part of the AI Teaching Demos series."
+type: software
+authors:
+  - family-names: "Gao"
+    given-names: "Shuyao"
+    email: "gaoshuyao.mk@gmail.com"
+    affiliation: "aSSIST University (Seoul School of Integrated Sciences and Technologies)"
+version: "1.0"
+license: MIT
+repository-code: "https://github.com/ShuyaoGao/homework-ai-grading-lab"
+url: "https://shuyaogao.github.io/homework-ai-grading-lab/"
+keywords:
+  - automated essay scoring
+  - handwriting recognition
+  - rubric
+  - large language models
+  - human-in-the-loop
+  - education
+  - teaching demo

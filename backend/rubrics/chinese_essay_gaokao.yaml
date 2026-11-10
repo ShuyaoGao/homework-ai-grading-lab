@@ -1,0 +1,65 @@
+key: chinese_essay_gaokao
+name: 高考作文（基础等级 40 + 发展等级 20，满分60分）
+subject: chinese
+kind: essay_zh
+version: "2026.1"
+max_score: 60
+source: >
+  参照全国卷高考作文评分标准的“基础等级/发展等级”框架及常见扣分细则整理，非官方原文。
+  “档次”是本系统为便于统计，按分项等级比例（80%/55%/30%）折算的总分区间，可自定义。
+description: >
+  基础等级分内容和表达两项：内容（切合题意、中心突出、内容充实、思想健康、感情真挚），
+  表达（符合文体要求、结构严谨、语言流畅、字迹工整）。
+  发展等级（深刻、丰富、有文采、有创新）不求全面，可根据“特征”4 项 16 点中若干突出点按等评分。
+scoring_method: >
+  内容项与表达项各 20 分，各分四等（一等 20–16、二等 15–11、三等 10–6、四等 5–0）；
+  发展等级 20 分同样分四等。基础等级评分以题意、内容、语言、文体为重点全面衡量；
+  符合文体要求是指符合考生根据题意和内容自选的文体要求。总分 = 三项之和 − 扣分项。
+bands:
+  - {name: 一等, min: 48, max: 60, descriptor: 切合题意，中心突出，内容充实，结构严谨，语言流畅，且在深刻、丰富、文采或创新上有突出表现。}
+  - {name: 二等, min: 33, max: 47, descriptor: 符合题意，中心明确，内容较充实，结构完整，语言通顺。}
+  - {name: 三等, min: 18, max: 32, descriptor: 基本符合题意，中心基本明确，内容单薄，结构基本完整，语言基本通顺，有少量病句。}
+  - {name: 四等, min: 0, max: 17, descriptor: 偏离题意，中心不明确，内容不当，结构混乱，语言不通顺，语病多。}
+criteria:
+  - id: content
+    name: 基础等级·内容
+    max: 20
+    dimension: content
+    descriptor: 切合题意、中心突出、内容充实、思想健康、感情真挚。
+    levels:
+      - {name: 一等, min: 16, max: 20, text: 切合题意，中心突出，内容充实，思想健康，感情真挚}
+      - {name: 二等, min: 11, max: 15, text: 符合题意，中心明确，内容较充实，思想健康，感情真实}
+      - {name: 三等, min: 6, max: 10, text: 基本符合题意，中心基本明确，内容单薄，思想基本健康，感情基本真实}
+      - {name: 四等, min: 0, max: 5, text: 偏离题意，中心不明确，内容不当，思想不健康，感情虚假}
+  - id: expression
+    name: 基础等级·表达
+    max: 20
+    dimension: language
+    descriptor: 符合文体要求、结构严谨、语言流畅、字迹工整。
+    levels:
+      - {name: 一等, min: 16, max: 20, text: 符合文体要求，结构严谨，语言流畅，字迹工整}
+      - {name: 二等, min: 11, max: 15, text: 符合文体要求，结构完整，语言通顺，字迹清楚}
+      - {name: 三等, min: 6, max: 10, text: 基本符合文体要求，结构基本完整，语言基本通顺，字迹基本清楚}
+      - {name: 四等, min: 0, max: 5, text: 不符合文体要求，结构混乱，语言不通顺、语病多，字迹潦草难辨}
+  - id: development
+    name: 发展等级
+    max: 20
+    dimension: development
+    descriptor: 深刻（透过现象看本质、揭示事物内在关系、观点具有启发作用）；丰富（材料丰富、论据充实、形象丰满、意境深远）；有文采（用词贴切、句式灵活、善于运用修辞、文句有表现力）；有创新（见解新颖、材料新鲜、构思新巧、推理想象有独到之处、有个性特征）。
+    levels:
+      - {name: 一等, min: 16, max: 20, text: 特征突出}
+      - {name: 二等, min: 11, max: 15, text: 特征较突出}
+      - {name: 三等, min: 6, max: 10, text: 有一定特征}
+      - {name: 四等, min: 0, max: 5, text: 个别语句有闪光点}
+    knowledge_point: 语文-写作发展等级
+deductions:
+  - {id: typo, name: 错别字, rule: 每 1 个错别字扣 1 分，重复的不计, per_item: 1, max: 5}
+  - {id: title, name: 缺标题, rule: 缺题目扣 2 分, per_item: 2, max: 2}
+  - {id: length, name: 字数不足, rule: 不足规定字数的，每少 50 字扣 1 分, per_item: 1, max: 10}
+  - {id: punctuation, name: 标点错误, rule: 标点错误多的，酌情扣分, per_item: 1, max: 2}
+review_policy:
+  confidence_below: 0.7
+  near_band_boundary: 1.0
+  low_score_ratio: 0.5
+heuristic:
+  min_chars: 800

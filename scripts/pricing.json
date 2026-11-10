@@ -1,0 +1,14 @@
+{
+  "_note": "单价为每百万 token。价格会变，跑之前请到官方页面核对。status 为“已核实”表示核对过官方页面（见 source 和 checked）；为“待核实”的不能当作报价。",
+  "claude-sonnet-5-5": {"currency": "USD", "input": 2.0, "output": 10.0, "status": "已核实", "checked": "2026-10-08",
+                         "source": "https://platform.claude.com/docs/en/about-claude/pricing"},
+  "claude-opus-5-5": {"currency": "USD", "input": 4.0, "output": 20.0, "status": "已核实", "checked": "2026-10-08",
+                       "source": "https://platform.claude.com/docs/en/about-claude/pricing"},
+  "qwen-vl-max": {"currency": "CNY", "input": 20.0, "output": 20.0, "status": "待核实", "checked": "2026-10-08",
+                   "source": "二手资料：developer.aliyun.com/article/1720807 等转述“0.02 元/千 Token”（2024-03 调价口径）。百炼官方模型页未列价格，请以百炼控制台计费页为准"},
+  "qwen-plus": {"currency": "CNY", "input": 0.8, "output": 4.8, "status": "待核实", "checked": "2026-10-08",
+                 "source": "二手资料：developer.aliyun.com/article/1720807 转述“输入 0.8 元/百万、输出 4.8 元/百万（≤128K）”。请以百炼控制台计费页为准"},
+  "vllm-local": {"currency": "CNY", "input": 0.0, "output": 0.0, "status": "本地部署无 API 费用", "checked": "2026-10-08",
+                  "source": "只有电费：两张 3090 满载约 0.7 kW，按 0.6 元/度估算约 0.4 元/小时（粗估）"},
+  "usd_cny": {"rate": 7.1, "status": "待核实", "note": "粗略汇率，仅用于换算展示"}
+}

@@ -1,0 +1,27 @@
+key: short_answer_math
+name: 简答题/数学题（带参考答案，逐题给分）
+subject: math
+kind: short_answer
+version: "2026.1"
+source: 通用“结果分 + 过程分”给分原则，教师在布置作业时填写每题参考答案、分值、知识点和给分要点。
+description: >
+  每道题是一个评分维度，满分为该题分值。参考答案中 steps（给分要点）各占一定分值，
+  最终答案正确且过程完整得满分；结果错误但关键步骤正确的，按步骤给分；
+  只写答案无过程的，解答题最多得结果分。
+scoring_method: >
+  逐题比对：①最终答案是否与参考答案等价（数值相等、代数式等价、单位正确）；
+  ②给分要点是否出现；③有无概念性错误。计算错误、步骤缺失、单位错误分别标注错误类型
+  calculation / missing_step / unit。识别不清的数字须标注 ocr_uncertain 并建议人工复核。
+bands:
+  - {name: 优秀, min: 0.85, max: 1.0, descriptor: 得分率 ≥85%}
+  - {name: 良好, min: 0.7, max: 0.8499, descriptor: 得分率 70%–85%}
+  - {name: 合格, min: 0.6, max: 0.6999, descriptor: 得分率 60%–70%}
+  - {name: 待提高, min: 0, max: 0.5999, descriptor: 得分率 <60%}
+band_scale: ratio
+criteria: []
+review_policy:
+  confidence_below: 0.75
+  near_band_boundary: 0
+  low_score_ratio: 0.5
+heuristic:
+  numeric_tolerance: 0.001

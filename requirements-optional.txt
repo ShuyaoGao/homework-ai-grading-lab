@@ -1,0 +1,8 @@
+# 可选：本地 PaddleOCR（CPU 版）。体积大（数百 MB），对手写中文效果有限，按需安装：
+#   .venv\Scripts\pip install -r requirements-optional.txt
+# 安装后设置 OCR_PROVIDER=paddle 即可启用。
+paddlepaddle>=3.0
+paddleocr>=3.0
+
+# 可选：HEIC/HEIF 照片支持（部分安卓浏览器会直接上传相机原图）
+pillow-heif>=0.16

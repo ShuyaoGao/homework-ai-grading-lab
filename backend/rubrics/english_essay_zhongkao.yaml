@@ -1,0 +1,44 @@
+key: english_essay_zhongkao
+name: 中考英语书面表达（满分20分，五档）
+subject: english
+kind: essay_en
+version: "2026.1"
+max_score: 20
+source: >
+  参照多地中考英语书面表达“五档评分”的通行做法整理（满分 15/20/25 各地不一，此处取 20 分），
+  非任何一地官方原文。使用前请按本地考试说明修改分值与档次。
+description: >
+  从内容要点、语言准确与丰富程度、篇章连贯三方面评价。书写规范、卷面整洁可在档内酌情考虑。
+scoring_method: >
+  先通读全文，按整体印象定档；再参照分项描述在档内给分。分项分之和即总分。
+  拼写、大小写、标点错误按其影响理解的程度扣分，同一单词重复错误只计一次。
+bands:
+  - {name: 第五档, min: 17, max: 20, descriptor: 完全符合题目要求，要点齐全，语言准确流畅，表达丰富，衔接自然，基本无语言错误。}
+  - {name: 第四档, min: 13, max: 16, descriptor: 符合题目要求，要点齐全或基本齐全，语言较准确，有少量错误但不影响理解，行文较连贯。}
+  - {name: 第三档, min: 9, max: 12, descriptor: 基本符合题目要求，遗漏个别要点，语言错误较多但基本能表达意思，有一定连贯性。}
+  - {name: 第二档, min: 5, max: 8, descriptor: 部分符合题目要求，遗漏较多要点，语言错误多，影响理解。}
+  - {name: 第一档, min: 0, max: 4, descriptor: 与题目要求关联不大，只写出少数相关词句，或语言错误严重以致无法理解。}
+criteria:
+  - id: content
+    name: 内容要点
+    max: 8
+    dimension: content
+    descriptor: 要点是否齐全、切题，有无合理的细节或发挥。
+  - id: language
+    name: 语言运用
+    max: 8
+    dimension: language
+    descriptor: 时态、主谓一致、冠词、介词等语法准确性；词汇和句式的丰富程度；拼写与大小写。
+  - id: organization
+    name: 篇章结构
+    max: 4
+    dimension: organization
+    descriptor: 开头结尾完整、段落清楚、使用 first/then/however/in a word 等衔接词，行文连贯。
+deductions:
+  - {id: word_count, name: 词数不足, rule: 词数低于要求的 75% 时扣分, per_item: 2, max: 2}
+review_policy:
+  confidence_below: 0.7
+  near_band_boundary: 0.5
+  low_score_ratio: 0.4
+heuristic:
+  target_words: [80, 100]

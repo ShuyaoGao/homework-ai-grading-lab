@@ -1,0 +1,31 @@
+Documentation and teaching materials license
+============================================
+
+Copyright (c) 2026 Shuyao Gao
+Contact: gaoshuyao.mk@gmail.com
+
+Unless otherwise noted, the documentation and teaching materials in this
+repository are licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0).
+
+  Summary: https://creativecommons.org/licenses/by/4.0/
+  Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+
+"Documentation and teaching materials" means:
+  - the prose of README.md, DEMO_GUIDE.md and everything under docs/;
+  - eval/DATASETS.md, scripts/first_real_eval.md and showcase/DEMO.md;
+  - the rubric texts under backend/rubrics/ (descriptions and criteria);
+  - the text shown by the web demo (play/ and frontend/), including the
+    step-by-step explanations of the guided tour;
+  - screenshots, GIFs and the synthetic homework images under showcase/,
+    demo/screenshots/ and play/mock/img/.
+
+Source code (Python, JavaScript, HTML/CSS and build scripts) is licensed
+separately under the MIT License, see LICENSE.
+
+Third-party components (Chart.js) keep their own licenses; see
+THIRD_PARTY.md.
+
+Suggested attribution:
+  "Homework AI Grading Lab" by Shuyao Gao, CC BY 4.0,
+  https://github.com/ShuyaoGao/homework-ai-grading-lab
